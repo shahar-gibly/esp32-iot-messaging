@@ -1,26 +1,24 @@
-```cpp
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <WiFiManager.h> // הוספה של WiFiManager
 
-// Replace with your network credentials
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
-
-// Replace with your MQTT Broker IP
+// כתובת שרת ה-MQTT
 const char* mqtt_server = "192.168.1.100";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 void setup_wifi() {
-  delay(10);
-  Serial.println("Connecting to WiFi...");
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+  WiFiManager wifiManager;
+
+  // אם אין חיבור - נפתח דף בחירת רשת
+  if (!wifiManager.autoConnect("ESP32_Setup")) {
+    Serial.println("Failed to connect and hit timeout");
+    delay(3000);
+    ESP.restart();
   }
-  Serial.println("WiFi connected");
+
+  Serial.println("WiFi connected successfully!");
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
